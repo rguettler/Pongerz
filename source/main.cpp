@@ -2,42 +2,43 @@
 #include <iostream>
 using namespace::std;
 
-const char* donger = "./images/Pongers.png";
-const char* paddle = "./images/paddlez.png";
-const char* titleLoad = "./images/PongersTitle.png";
-const char* bunk = "./images/bunk.png";
+const char* donger = "./images/Pongers.png"; //Ball Image location
+const char* paddle = "./images/paddlez.png"; // Paddle Image Location
+const char* titleLoad = "./images/PongersTitle.png"; //Title Image Location
+const char* bunk = "./images/bunk.png"; //High Score Image location
 const char* highScore = "Todays High Score is:"; //High score text
-const char* title = "RAISE UR PONGERS";
-const char* gameStartText = "Press enter to start";
+const char* title = "RAISE UR PONGERS"; //Window Title
+const char* gameStartText = "Press enter to start"; 
 const char* highScoreStart = "Press H for high scores";
 const char* hScoreReturn = "Press escape to return";
+const char* exitText = "Press X to exit";
 
 
 const int screenWidth = 1000;
 const int screenHeight = 600;
 
-void fakeasscollision(); //collision testing
-void gameloop(float deltaTime);
-void mainmenu();
-void highscores();
+void fakeasscollision(); //Collision Func
+void gameloop(float deltaTime); //Gameplay Function
+void mainmenu(); //Menu Function
+void highscores(); //High Score Func
 
-int bunkSprite;
-int titleSplash;
-int scores[2];
+int bunkSprite; //High Score Sprite
+int titleSplash; //Title Sprite
+int scores[2]; //Score array
 
 
 
-struct Ponger
+struct Ponger //Ball Structure
 {
 	unsigned int spriteID;
 	float width = 60;
 	float height = 50;
 	float x = screenWidth * .5f;
 	float y = screenHeight * .5f;
-	float baseX = 1000;
-	float baseY = 1500;
-	float xSpeed = 1000;
-	float ySpeed = 1500;
+	float baseX = 500;
+	float baseY = 750;
+	float xSpeed = 500;
+	float ySpeed = 750;
 
 	void Move(float a_timeStep)
 	{
@@ -58,7 +59,7 @@ struct Ponger
 };
 Ponger ponger;
 
-struct Playerone
+struct Playerone //Left Paddle Structure
 {
 	char score[2];
 	unsigned int spriteID;
@@ -100,7 +101,7 @@ struct Playerone
 };
 Playerone player1;
 
-struct Playertwo
+struct Playertwo // Right Paddle Structure
 {
 	char score[2];
 	unsigned int spriteID;
@@ -153,7 +154,7 @@ int main( int argc, char* argv[] )
 	
     
     SetBackgroundColour(SColour(0, 0, 0, 255));
-	float deltaTime = GetDeltaTime();
+	
 	titleSplash = CreateSprite(titleLoad, 664, 119, true);
 	bunkSprite = CreateSprite(bunk, 188, 128, true);
 	ponger.spriteID = CreateSprite(donger, ponger.width, ponger.height, true);
@@ -162,11 +163,12 @@ int main( int argc, char* argv[] )
 	player1.SetMovementKeys('W', 'S');
 	player2.SetMovementKeys(265,264);
 
-	GAMESTATES currentState = highscore;
+	GAMESTATES currentState = main_menu;
     
 	//Game Loop
 	do
     {
+		float deltaTime = GetDeltaTime();
 		switch (currentState)
 		{
 		case main_menu:
@@ -179,7 +181,13 @@ int main( int argc, char* argv[] )
 			{
 				currentState = highscore;
 			}
+			if (IsKeyDown('X'))
+			{
+				Shutdown();
+				return 0;
+			}
 			break;
+
 
 
 		case gameplay:
@@ -229,7 +237,7 @@ void gameloop(float deltaTime)
 		
 	fakeasscollision();
 
-	if (ponger.x > screenWidth)
+	if (ponger.x > screenWidth) // Player 1 Win Con
 	{
 		scores[0] +=1;
 		ponger.x = screenWidth *.5f;
@@ -238,7 +246,7 @@ void gameloop(float deltaTime)
 		
 
 	}
-	if (ponger.x < 0)
+	if (ponger.x < 0) //Player 2 Win Con
 	{
 		scores[1] +=1;
 		ponger.x = screenWidth*.5f;
@@ -251,17 +259,17 @@ void gameloop(float deltaTime)
 
 void fakeasscollision()
 {
-	if (ponger.x + ponger.width >= player2.x && ((ponger.y <= player2.y + 100) && (ponger.y >= player2.y - 100)))
+	if (ponger.x + ponger.width >= player2.x && ((ponger.y <= player2.y + 100) && (ponger.y >= player2.y - 100))) //Right Paddle Collision
 	{
 		ponger.x -= 5;
-		ponger.xSpeed += 150;
+		ponger.xSpeed += 75;
 		ponger.xSpeed = ponger.xSpeed *-1;
 		
 	};
-	if (ponger.x - ponger.width <= player1.x && ((ponger.y <= player1.y + 100) && (ponger.y >= player1.y - 100)))
+	if (ponger.x - ponger.width <= player1.x && ((ponger.y <= player1.y + 100) && (ponger.y >= player1.y - 100))) //Left Paddle Collision
 	{
 		ponger.x += 5;
-		ponger.xSpeed -= 150;
+		ponger.xSpeed -= 75;
 		ponger.xSpeed = ponger.xSpeed *-1;
 
 	}
@@ -273,6 +281,7 @@ void mainmenu()
 	MoveSprite(titleSplash, screenWidth*.5f, screenHeight*.85f);
 	DrawString(gameStartText, screenWidth*.375f, screenHeight *.55f);
 	DrawString(highScoreStart, screenWidth *.35f, screenHeight *.35f);
+	DrawString(exitText, screenWidth*.41f, screenHeight*.25f);
 
 }
 
